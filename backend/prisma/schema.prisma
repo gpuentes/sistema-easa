@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Categoria {
+  id          Int       @id @default(autoincrement())
+  nome        String
+  descricao   String?
+  tipo        String    // PRODUTOS, PESSOAS, DOACOES, ACOES
+  unidade     String    // quantidade, valor, texto
+  produtos    Produto[]
+  registros   Registro[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("categorias")
+}
+
+model Registro {
+  id          Int       @id @default(autoincrement())
+  categoriaId Int
+  categoria   Categoria @relation(fields: [categoriaId], references: [id])
+  quantidade  Int?      // Para registros numéricos
+  valor       Float?    // Para registros monetários
+  descricao   String?   // Para registros textuais
+  mes         Int       // Mês do registro (1-12)
+  ano         Int       // Ano do registro
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("registros")
+  @@index([mes, ano])
+}
+
+// Modelo para parcerias
+model Parceria {
+  id          Int       @id @default(autoincrement())
+  nome        String    // Nome da empresa/instituição
+  tipo        String    // Tipo de parceria (mercado, padaria, etc)
+  descricao   String    // Descrição da contribuição
+  mes         Int       // Mês do registro
+  ano         Int       // Ano do registro
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("parcerias")
+  @@index([mes, ano])
+}
+
+// Modelo para voluntários
+model Voluntario {
+  id          Int       @id @default(autoincrement())
+  nome        String
+  projeto     String    // Nome do projeto em que atua
+  ativo       Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("voluntarios")
+}
+
+model Produto {
+  id          Int       @id @default(autoincrement())
+  nome        String
+  descricao   String?
+  preco       Float
+  quantidade  Int      @default(0)
+  valor       Float?    // Para doações
+  categoriaId Int
+  categoria   Categoria @relation(fields: [categoriaId], references: [id])
+  movimentacoes Movimentacao[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("produtos")
+}
+
+model Movimentacao {
+  id          Int      @id @default(autoincrement())
+  tipo        String   // 'entrada' ou 'saida'
+  quantidade  Int
+  data        DateTime @default(now())
+  observacao  String?
+  produtoId   Int
+  produto     Produto  @relation(fields: [produtoId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model KanbanCard {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  type        String   // 'improvement' | 'implementation' | 'bug' | 'feature'
+  status      String   // 'parkingLot' | 'todo' | 'inProgress' | 'done' | 'history'
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("kanban_cards")
+} 
