@@ -7,7 +7,7 @@ O Sistema ASA utiliza PostgreSQL como banco de dados relacional, com Prisma como
 ## Conexão
 
 ```env
-DATABASE_URL="postgresql://postgres:[password]@89.116.74.121:5432/estoqueasa?schema=public"
+DATABASE_URL="postgresql://postgres:[password]@--SEU-IP-aqui/estoqueasa?schema=public"
 ```
 
 ## Modelos
